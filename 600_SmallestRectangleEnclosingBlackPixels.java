@@ -15,6 +15,116 @@ and x = 0, y = 2,
 Return 6.
 
  */
+// 2. Binary Search - O(nlogm + mlogn) time, where n = rows, m = cols.
+public class Solution {
+    /**
+     * @param image: a binary matrix with '0' and '1'
+     * @param x: the location of one of the black pixels
+     * @param y: the location of one of the black pixels
+     * @return: an integer
+     * 2. Binary search the upper bound, lower bound, left bound and right bound;
+     * Then compute the area = (right - left + 1) * (upper - lower + 1).
+     */
+    // private final static boolean horizon = true;
+    // private final static boolean vertical = false;
+    // private final static boolean positive = true;
+    // private final static boolean negative = false;
+    public int minArea(char[][] image, int x, int y) {
+        if (image == null || image.length == 0 || image.length == 0) {
+            return 0;
+        }
+        int row = image.length;
+        int col = image[0].length;
+        
+        int top = findTop(image, 0, x);
+        int btm = findBottom(image, x, row - 1);
+        int left = findLeft(image, 0, y);
+        int right = findRight(image, y, col - 1);
+        
+        return (right - left + 1) * (btm - top + 1);
+    }
+    
+    private boolean isRowEmpty(char[][] image, int rowIndex) {
+        for (int i = 0; i < image[0].length; ++i) {
+            if (image[rowIndex][i] == '1') {
+                return false;
+            }
+        }        
+        return true;
+    } 
+    
+    private int findTop(char[][] image, int start, int end) {
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            if (isRowEmpty(image, mid)) {
+                start = mid;
+            } else {
+                end = mid;
+            }
+        }
+        if (!isRowEmpty(image, start)) {
+            return start;
+        }
+        return end;
+    }
+    
+    private int findBottom(char[][] image, int start, int end) {
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            if (isRowEmpty(image, mid)) {
+                end = mid;
+            } else {
+                start = mid;
+            }
+        }
+        if (!isRowEmpty(image, end)) {
+            return end;
+        }
+        return start;
+    }
+    
+    private boolean isColumnEmpty(char[][] image, int colIndex) {
+        for (int i = 0; i < image.length; ++i) {
+            if (image[i][colIndex] == '1') {
+                return false;
+            }
+        }        
+        return true;
+    } 
+    
+    private int findLeft(char[][] image, int start, int end) {
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            if (isColumnEmpty(image, mid)) {
+                start = mid;
+            } else {
+                end = mid;
+            }
+        }
+        if (!isColumnEmpty(image, start)) {
+            return start;
+        }
+        return end;
+    }
+    
+    private int findRight(char[][] image, int start, int end) {
+        while (start + 1 < end) {
+            int mid = start + (end - start) / 2;
+            if (isColumnEmpty(image, mid)) {
+                end = mid;
+            } else {
+                start = mid;
+            }
+        }
+        if (!isColumnEmpty(image, end)) {
+            return end;
+        }
+        return start;
+    }
+    
+}
+
+
 
 // 1. BFS. 
 class Point {
@@ -44,12 +154,11 @@ public class Solution {
         int xMax = Integer.MIN_VALUE, yMax = Integer.MIN_VALUE;
         int row = image.length;
         int col = image[0].length;
-        
         boolean[][] visited = new boolean[row][col];
+        
         Queue<Point> queue = new LinkedList<>();
         queue.offer(new Point(x, y));
         visited[x][y] = true;
-        
         while(!queue.isEmpty()) {
             Point curt = queue.poll();
             xMin = Math.min(xMin, curt.x);
